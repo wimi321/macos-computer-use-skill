@@ -1,4 +1,4 @@
 interface:
   display_name: "Computer Use macOS"
-  short_description: "Run the extracted standalone macOS computer-use MCP server"
-  default_prompt: "Wire up and run the standalone macOS computer-use MCP server from this repository, including env checks and build steps."
+  short_description: "Run the bundled standalone macOS computer-use MCP server"
+  default_prompt: "Use the skill-bundled standalone macOS computer-use MCP server, build it if needed, let it self-bootstrap its runtime, and avoid any dependency on a local Claude installation."

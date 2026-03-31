@@ -1,41 +1,35 @@
 ---
 name: computer-use-macos
-description: Use when you need to drive the extracted Claude Code macOS computer-use MCP server from a standalone GitHub project or local Codex setup, especially for screenshots, clicks, typing, app control, and computer-use MCP wiring.
+description: Use when you need a fully standalone macOS computer-use MCP server and skill that bootstraps itself without any local Claude installation, private native modules, or extracted app assets.
 ---
 
 # Computer Use macOS
 
-Use this skill when the task needs the extracted standalone macOS computer-use MCP server from this repository.
+Use this skill when the task needs the standalone macOS computer-use MCP server bundled with this skill.
 
 ## What this skill does
 
-- points Codex at the standalone `claude-computer-use-mcp` project
-- checks the required native-module environment variables
-- builds and launches the MCP server
-- reminds the operator that this standalone host auto-approves `request_access`
+- uses the bundled `claude-computer-use-mcp` project under the installed skill directory
+- builds the standalone MCP server
+- lets the server auto-bootstrap its Python runtime on first launch
+- avoids any dependency on local Claude binaries, `.node` modules, or extracted app assets
 
-## Required environment
+## Default bundled project path
 
-Before starting the server, verify these environment variables are set:
-
-```bash
-printf '%s\n' "$COMPUTER_USE_SWIFT_NODE_PATH" "$COMPUTER_USE_INPUT_NODE_PATH"
-```
-
-If either value is empty, stop and explain that the standalone project needs the original native `.node` modules.
-
-## Project path
-
-Assume the extracted project lives at:
+After installation, assume the standalone project lives at:
 
 ```bash
-/Users/haoc/Developer/cc-mg/claude-computer-use-mcp
+~/.codex/skills/computer-use-macos/project
 ```
+
+If the user installed the skill under a custom `CODEX_HOME`, use that equivalent path instead.
 
 ## Build
 
+Always build from the bundled project:
+
 ```bash
-cd /Users/haoc/Developer/cc-mg/claude-computer-use-mcp
+cd ~/.codex/skills/computer-use-macos/project
 npm install
 npm run build
 ```
@@ -43,12 +37,15 @@ npm run build
 ## Run
 
 ```bash
-cd /Users/haoc/Developer/cc-mg/claude-computer-use-mcp
+cd ~/.codex/skills/computer-use-macos/project
 node dist/cli.js
 ```
+
+The first real run will automatically create `.runtime/venv` and install the public Python dependencies.
 
 ## Guardrails
 
 - Treat this host as trusted-local only.
-- Do not claim the native modules are bundled if the env vars are missing.
-- Mention that `request_access` is auto-approved in this standalone adaptation.
+- Do not tell the user to search their local Claude install for binaries or hidden assets.
+- Be explicit that this runtime is standalone and uses public dependencies only.
+- Mention that the current runtime reports `screenshotFiltering: none`, so action gating is handled at the MCP layer.

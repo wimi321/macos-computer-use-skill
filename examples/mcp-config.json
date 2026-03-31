@@ -6,8 +6,7 @@
         "/absolute/path/to/claude-computer-use-mcp/dist/cli.js"
       ],
       "env": {
-        "COMPUTER_USE_SWIFT_NODE_PATH": "/absolute/path/to/computer_use.node",
-        "COMPUTER_USE_INPUT_NODE_PATH": "/absolute/path/to/computer-use-input.node",
+        "CLAUDE_COMPUTER_USE_DEBUG": "0",
         "CLAUDE_COMPUTER_USE_COORDINATE_MODE": "pixels"
       }
     }

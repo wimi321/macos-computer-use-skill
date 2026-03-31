@@ -4,7 +4,7 @@ import { logDebug, logWarn } from '../lib/log.js'
 import { COMPUTER_USE_MCP_SERVER_NAME } from './common.js'
 import { createCliExecutor } from './executor.js'
 import { getChicagoEnabled, getChicagoSubGates } from './gates.js'
-import { requireComputerUseSwift } from './swiftLoader.js'
+import { callPythonHelper } from './pythonBridge.js'
 
 class DebugLogger implements Logger {
   silly(message: string, ...args: unknown[]): void { logDebug(format(message, ...args)) }
@@ -26,12 +26,10 @@ export function getComputerUseHostAdapter(): ComputerUseHostAdapter {
       getHideBeforeActionEnabled: () => getChicagoSubGates().hideBeforeAction,
     }),
     ensureOsPermissions: async () => {
-      const cu = requireComputerUseSwift()
-      const accessibility = cu.tcc.checkAccessibility()
-      const screenRecording = cu.tcc.checkScreenRecording()
-      return accessibility && screenRecording
+      const perms = await callPythonHelper<{ accessibility: boolean; screenRecording: boolean }>('check_permissions', {})
+      return perms.accessibility && perms.screenRecording
         ? { granted: true as const }
-        : { granted: false as const, accessibility, screenRecording }
+        : { granted: false as const, accessibility: perms.accessibility, screenRecording: perms.screenRecording }
     },
     isDisabled: () => !getChicagoEnabled(),
     getSubGates: getChicagoSubGates,

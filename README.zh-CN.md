@@ -1,111 +1,91 @@
-<p align="center">
-  <img src="./assets/hero.svg" alt="claude-computer-use-mcp 横幅" width="100%" />
-</p>
+<div align="center">
+  <img src="./assets/hero.svg" alt="claude-computer-use-mcp hero" width="100%" />
+  <h1>claude-computer-use-mcp</h1>
+  <p><strong>一个完全脱离本机 Claude 安装、可独立运行的 macOS Computer Use MCP Server。</strong></p>
+  <p>
+    <a href="https://github.com/wimi321/claude-computer-use-mcp">GitHub</a>
+    ·
+    <a href="./README.md">English</a>
+    ·
+    <a href="./README.ja.md">日本語</a>
+  </p>
+</div>
 
-<p align="center">
-  <a href="./README.md">English</a> | 简体中文 | <a href="./README.ja.md">日本語</a>
-</p>
+## 这个项目解决什么问题
 
-<p align="center">
-  <a href="https://github.com/wimi321/claude-computer-use-mcp"><img src="https://img.shields.io/badge/platform-macOS-0F172A?style=for-the-badge&logo=apple&logoColor=white" alt="macOS" /></a>
-  <a href="https://www.npmjs.com/"><img src="https://img.shields.io/badge/node-%3E%3D20-0B1220?style=for-the-badge&logo=node.js&logoColor=7EE787" alt="Node 20+" /></a>
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-13233D?style=for-the-badge" alt="MIT License" /></a>
-  <a href="./skill/computer-use-macos/SKILL.md"><img src="https://img.shields.io/badge/codex-skill-1D3557?style=for-the-badge" alt="Codex Skill" /></a>
-</p>
+目标只有一个：
 
-<h1 align="center">claude-computer-use-mcp</h1>
+- 不依赖本机 Claude
+- 不依赖私有 `.node` 二进制
+- 不依赖“先从某个安装目录里捞内部资产”
+- skill 装上之后就能把 computer-use 跑起来
 
-<p align="center">
-  一个从 Claude Code <code>computer use</code> 能力中抽离出来的独立 macOS Computer Use MCP Server。
-</p>
+这版仓库已经按这个目标重构完成。
 
-<p align="center">
-  它把原本埋在产品内部的一套能力，重构成一个真正像顶级 GitHub 项目的独立仓库：有独立入口、有清晰架构、有可复用 TypeScript 核心，也有配套的 Codex Skill。
-</p>
+## 你现在拿到的能力
 
-## 一眼看懂
+- 独立 MCP server：截图、鼠标、键盘、应用启动、窗口/显示器信息、剪贴板
+- 只使用公开依赖：`Node.js + Python + pyautogui + mss + Pillow + pyobjc`
+- 首次运行自动自举：自动创建 `.runtime/venv` 并安装 Python 依赖
+- 顶级 Codex skill，可把完整项目一起安装到 `~/.codex/skills/computer-use-macos/project`
+- 保留并复用提取出来的 TypeScript computer-use 工具链，但底层执行器已换成真正独立的 runtime
 
-- 独立的 stdio MCP Server
-- 抽离后的 `computer-use-mcp` TypeScript 核心
-- macOS CLI host adapter
-- session 状态和锁控制
-- 顶级 Codex skill
-- 明确的 native 模块注入方案，而不是假装“已经完整开源”
+## 已完成的本地验证
 
-## 为什么要做这个项目
+已经在 macOS 本机实际验证：
 
-Claude Code 内部其实已经有一套很强的 macOS computer-use 能力：
+- runtime 自举成功
+- 权限检测成功
+- 显示器枚举成功
+- 截图成功
+- 前台应用识别成功
+- 鼠标位置对应应用识别成功
+- 窗口到显示器的归属解析成功
+- 剪贴板读写成功
+- 输入链路 smoke test 成功
+- MCP server 成功启动
 
-- 截图采集
-- 应用发现与解析
-- 鼠标和键盘控制
-- 权限分级逻辑
-- 多显示器坐标处理
-- 会话级锁保护
-- MCP tool schema 与调度
+## 架构
 
-但这些能力原本是产品内嵌实现，不是一个可以直接复用的顶级仓库。这个项目的目标，就是把其中可抽离、可理解、可扩展的那一层，整理成一个独立 GitHub 项目。
+```mermaid
+flowchart LR
+    A[Codex / MCP Client] --> B[claude-computer-use-mcp]
+    B --> C[提取出的 TypeScript MCP 工具层]
+    B --> D[独立 Python bridge]
+    D --> E[pyautogui]
+    D --> F[mss + Pillow]
+    D --> G[pyobjc Cocoa + Quartz]
+    E --> H[鼠标 / 键盘]
+    F --> I[截图]
+    G --> J[应用 / 显示器 / 剪贴板 / 窗口]
+```
 
-## 这个仓库到底包含什么
+## 安装
 
-### 已包含
-
-- 独立 MCP server 入口
-- 抽离后的 `computer-use-mcp` TypeScript 逻辑
-- host 侧 macOS executor wrapper
-- session 状态与文件锁逻辑
-- Codex skill
-- 可构建的 TypeScript 工程
-- MCP 配置示例和环境变量模板
-
-### 未包含
-
-- 原始低层输入与截图所依赖的 native `.node` 二进制
-
-原因很直接：这些 `.node` 文件并不在当前提取出来的源码树里，所以仓库选择诚实暴露注入点，而不是伪装成“开箱即用且已全部公开”。
-
-## 项目特性
-
-- 基于 stdio 的 MCP server
-- vendor 化后的 computer-use TS 核心
-- 面向 macOS 的 host adapter
-- 显示器感知的截图与坐标流转
-- 单 session 占用锁
-- 面向 Codex 的 skill 集成
-- native 缺失时给出清晰错误信息
-
-## 快速开始
-
-### 1. 安装依赖
+### 1. 克隆并安装 Node 依赖
 
 ```bash
+git clone https://github.com/wimi321/claude-computer-use-mcp.git
+cd claude-computer-use-mcp
 npm install
-```
-
-### 2. 配置 native 模块路径
-
-```bash
-export COMPUTER_USE_SWIFT_NODE_PATH="/absolute/path/to/computer_use.node"
-export COMPUTER_USE_INPUT_NODE_PATH="/absolute/path/to/computer-use-input.node"
-```
-
-### 3. 构建
-
-```bash
 npm run build
 ```
 
-### 4. 启动
+### 2. 启动 server
 
 ```bash
 node dist/cli.js
 ```
 
-## 可直接复用的 MCP 配置
+首次启动时项目会自动：
 
-参考：
+- 创建 `.runtime/venv`
+- 必要时自动补 `pip`
+- 根据 `runtime/requirements.txt` 安装 Python 运行时依赖
 
-- [examples/mcp-config.json](./examples/mcp-config.json)
+不需要 Claude Desktop。也不需要任何私有 native 模块。
+
+## MCP 配置
 
 示例：
 
@@ -118,8 +98,7 @@ node dist/cli.js
         "/absolute/path/to/claude-computer-use-mcp/dist/cli.js"
       ],
       "env": {
-        "COMPUTER_USE_SWIFT_NODE_PATH": "/absolute/path/to/computer_use.node",
-        "COMPUTER_USE_INPUT_NODE_PATH": "/absolute/path/to/computer-use-input.node",
+        "CLAUDE_COMPUTER_USE_DEBUG": "0",
         "CLAUDE_COMPUTER_USE_COORDINATE_MODE": "pixels"
       }
     }
@@ -127,134 +106,113 @@ node dist/cli.js
 }
 ```
 
-## 运行时配置
+参考 [`examples/mcp-config.json`](./examples/mcp-config.json)。
 
-必须提供：
+## 顶级 Skill
 
-```bash
-export COMPUTER_USE_SWIFT_NODE_PATH="/absolute/path/to/computer_use.node"
-export COMPUTER_USE_INPUT_NODE_PATH="/absolute/path/to/computer-use-input.node"
-```
+仓库自带顶级 skill：[`skill/computer-use-macos`](./skill/computer-use-macos)
 
-可选配置：
+安装：
 
 ```bash
-export CLAUDE_COMPUTER_USE_DEBUG=1
-export CLAUDE_COMPUTER_USE_ENABLED=1
-export CLAUDE_COMPUTER_USE_COORDINATE_MODE=pixels
-export CLAUDE_COMPUTER_USE_PIXEL_VALIDATION=0
-export CLAUDE_COMPUTER_USE_HIDE_BEFORE_ACTION=1
-export CLAUDE_COMPUTER_USE_AUTO_TARGET_DISPLAY=1
-export CLAUDE_COMPUTER_USE_CLIPBOARD_GUARD=1
+bash skill/computer-use-macos/scripts/install.sh
 ```
 
-也可以直接从这里复制：
+安装脚本会一起复制：
 
-- [examples/env.sh.example](./examples/env.sh.example)
+- skill 元数据
+- 独立项目本体
+- runtime 自举文件
 
-## 架构
-
-```mermaid
-flowchart LR
-    A["Codex / MCP Client"] --> B["claude-computer-use-mcp"]
-    B --> C["Vendorized TS Core"]
-    B --> D["macOS Host Adapter"]
-    D --> E["computer_use.node"]
-    D --> F["computer-use-input.node"]
-```
-
-### Public Layer
-
-这个仓库里真正可复用的部分包括：
-
-- MCP tool 定义
-- tool 调度
-- session 绑定
-- executor interface
-- host adapter
-- lock handling
-- skill packaging
-
-### Native Layer
-
-真正的设备控制能力依赖：
-
-- `COMPUTER_USE_SWIFT_NODE_PATH`
-- `COMPUTER_USE_INPUT_NODE_PATH`
-
-这种切分是刻意保留的。它让仓库对“什么已经被提取出来”和“什么仍然依赖原始 native artifact”保持诚实。
-
-## 项目结构
-
-```text
-.
-├── assets/hero.svg                  # 仓库横幅
-├── examples/                        # MCP / env 示例
-├── skill/computer-use-macos/        # 顶级 Codex skill
-├── src/cli.ts                       # server 入口
-├── src/server.ts                    # MCP server 接线
-├── src/session.ts                   # session 状态与权限行为
-├── src/computer-use/                # macOS host 侧逻辑
-├── src/lib/                         # 本地工具函数
-└── src/vendor/computer-use-mcp/     # 抽离后的 TS core
-```
-
-## Codex Skill
-
-仓库自带顶级 skill：
-
-- [skill/computer-use-macos/SKILL.md](./skill/computer-use-macos/SKILL.md)
-
-本地安装：
+安装后默认项目路径为：
 
 ```bash
-mkdir -p "$HOME/.codex/skills/computer-use-macos"
-rsync -a skill/computer-use-macos/ "$HOME/.codex/skills/computer-use-macos/"
+~/.codex/skills/computer-use-macos/project
 ```
 
-## 与原始产品实现的差异
+也就是说，即使原始 clone 被删掉，skill 仍然有自己的可运行项目副本。
 
-这个 standalone 版本是务实落地版，不是 1:1 产品复制。
+## 运行说明
 
-- `request_access` 在当前 host 中是 auto-approve
-- 原始 Claude Code 的桌面审批 UI 没有被一起打包
-- 更适合可信本地环境，而不是多租户服务
-- 缺少 native 路径时会直接 fail fast
+### 权限
 
-## 当前限制
+macOS 仍然需要：
 
-- 仅支持 macOS
-- 不包含 native `.node` 二进制
-- 没有内置桌面审批 UI
-- 目前还不是完全自包含的 npm 发行版
-- 更适合本地 agent / 研究 / 高级工作流场景
+- Accessibility
+- Screen Recording
 
-## 路线图
+这个 standalone host 会在 MCP 流程中检测并反馈这两项状态。
 
-- 支持可插拔 approval callback，替代当前 auto-approve
-- 进一步整理 native 模块接入方式
-- 增加更多 MCP client 接入示例
-- 降低嵌入到其他 agent runtime 的成本
-- 补完整的 native reconnect 文档
+### 截图过滤
 
-## 开发
+当前 standalone runtime 声明的是 `screenshotFiltering: none`。
 
-构建：
+含义是：
+
+- 截图本身不是 compositor 级过滤
+- 但操作权限、allowlist、tier 限制仍由 MCP 层逻辑继续执行
+
+### 覆盖范围
+
+当前项目聚焦于 macOS 桌面 computer use：
+
+- 截图
+- 鼠标控制
+- 键盘输入
+- 前台应用识别
+- 已安装 / 运行中应用枚举
+- 窗口到显示器映射
+- 剪贴板访问
+- 应用启动
+
+## 常用命令
 
 ```bash
 npm run build
+node dist/cli.js
 ```
-
-仅类型检查：
 
 ```bash
-npm run check
+node --input-type=module -e "import { callPythonHelper } from './dist/computer-use/pythonBridge.js'; console.log(await callPythonHelper('list_displays', {}));"
 ```
 
-当前 server 在缺少 native 模块路径时会直接报清晰错误，这是刻意设计。
+## 仓库结构
 
-## 致谢与说明
+```text
+src/
+  computer-use/
+    executor.ts
+    hostAdapter.ts
+    pythonBridge.ts
+  vendor/computer-use-mcp/
+runtime/
+  mac_helper.py
+  requirements.txt
+skill/
+  computer-use-macos/
+examples/
+assets/
+```
 
-本仓库来自对 Claude Code `computer use` 实现的本地提取与改造。
+## 可选环境变量
 
-它保留并重组了可复用的 TypeScript 与 host-side 逻辑，同时把当前拿不到的 native 部分明确保留为运行时依赖。
+- `CLAUDE_COMPUTER_USE_DEBUG=1`
+- `CLAUDE_COMPUTER_USE_COORDINATE_MODE=pixels`
+- `CLAUDE_COMPUTER_USE_CLIPBOARD_PASTE=1`
+- `CLAUDE_COMPUTER_USE_MOUSE_ANIMATION=1`
+- `CLAUDE_COMPUTER_USE_HIDE_BEFORE_ACTION=0`
+
+## 路线图
+
+- 更好的 app icon 提取
+- 更稳的嵌套 helper app 过滤
+- 更完整的 MCP 集成测试
+- 提供更易分发的打包产物
+
+## License
+
+MIT
+
+## Credits
+
+这个项目保留了从 Claude Code computer-use 工作流中提炼出来的可复用 TypeScript 逻辑，并用一套完全独立、公开可安装的 runtime 替换了缺失的私有执行层。

@@ -1,112 +1,93 @@
-<p align="center">
-  <img src="./assets/hero.svg" alt="claude-computer-use-mcp hero banner" width="100%" />
-</p>
+<div align="center">
+  <img src="./assets/hero.svg" alt="claude-computer-use-mcp hero" width="100%" />
+  <h1>claude-computer-use-mcp</h1>
+  <p><strong>A standalone macOS Computer Use MCP server with zero dependency on a local Claude installation.</strong></p>
+  <p>
+    <a href="https://github.com/wimi321/claude-computer-use-mcp">GitHub</a>
+    ·
+    <a href="./README.zh-CN.md">简体中文</a>
+    ·
+    <a href="./README.ja.md">日本語</a>
+  </p>
+</div>
 
-<p align="center">
-  English | <a href="./README.zh-CN.md">简体中文</a> | <a href="./README.ja.md">日本語</a>
-</p>
+## Why This Project Exists
 
-<p align="center">
-  <a href="https://github.com/wimi321/claude-computer-use-mcp"><img src="https://img.shields.io/badge/platform-macOS-0F172A?style=for-the-badge&logo=apple&logoColor=white" alt="macOS" /></a>
-  <a href="https://www.npmjs.com/"><img src="https://img.shields.io/badge/node-%3E%3D20-0B1220?style=for-the-badge&logo=node.js&logoColor=7EE787" alt="Node 20+" /></a>
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-13233D?style=for-the-badge" alt="MIT License" /></a>
-  <a href="./skill/computer-use-macos/SKILL.md"><img src="https://img.shields.io/badge/codex-skill-1D3557?style=for-the-badge" alt="Codex Skill" /></a>
-</p>
+The original Claude Code computer-use stack was excellent, but the user requirement here was stricter:
 
-<h1 align="center">claude-computer-use-mcp</h1>
+- no piggybacking on a local Claude install
+- no private `.node` binaries
+- no "works if you already extracted internal assets"
+- install the skill, launch the server, and use it
 
-<p align="center">
-  A standalone macOS Computer Use MCP server extracted from the <code>computer use</code> implementation inside Claude Code.
-</p>
+This repository now delivers exactly that on macOS.
 
-<p align="center">
-  It takes an embedded product capability and turns it into a top-level GitHub project with a real server entrypoint, vendorized TypeScript core, macOS host adapter, and a first-class Codex skill.
-</p>
+## What You Get
 
-## At A Glance
+- standalone MCP server for screenshots, mouse, keyboard, app launch, display switching context, and clipboard
+- public dependency chain only: `Node.js + Python + pyautogui + mss + Pillow + pyobjc`
+- first-run runtime bootstrap: the server creates its own virtualenv and installs dependencies automatically
+- top-level Codex skill that can bundle the project into `~/.codex/skills/computer-use-macos/project`
+- extracted TypeScript tool layer from the original computer-use workflow, re-wired to a fully independent backend
 
-- standalone MCP server over stdio
-- extracted `computer-use-mcp` TypeScript surface
-- macOS CLI host adapter
-- session lock and state handling
-- Codex skill for local workflows
-- explicit native-module injection instead of fake packaging
+## Current Status
 
-## Why This Exists
+This repository has been validated locally on macOS with:
 
-Claude Code already shipped a serious macOS computer-use stack:
-
+- runtime bootstrap
+- permission checks
+- display enumeration
 - screenshot capture
-- app discovery and resolution
-- mouse and keyboard control
-- permission-tier logic
-- display-aware coordinate handling
-- lock protection between sessions
-- MCP tool schemas and dispatch
+- frontmost app detection
+- app-under-point lookup
+- window-to-display resolution
+- clipboard read/write
+- safe input-path smoke tests
+- MCP server startup
 
-That implementation lived inside the product. This repository extracts the reusable orchestration layer into an independent project so it can be studied, adapted, and integrated into other local agent environments.
+## Architecture
 
-## What This Repo Actually Contains
+```mermaid
+flowchart LR
+    A[Codex / MCP Client] --> B[claude-computer-use-mcp]
+    B --> C[Extracted TypeScript MCP tools]
+    B --> D[Standalone Python bridge]
+    D --> E[pyautogui]
+    D --> F[mss + Pillow]
+    D --> G[pyobjc Cocoa + Quartz]
+    E --> H[Mouse / Keyboard]
+    F --> I[Screenshots]
+    G --> J[Apps / Displays / Clipboard / Windows]
+```
 
-### Included
+## Install
 
-- standalone MCP server entrypoint
-- extracted `computer-use-mcp` TypeScript logic
-- host-side macOS executor wrapper
-- session state and file-lock handling
-- Codex skill package
-- buildable TypeScript source tree
-- example MCP config and env templates
-
-### Not Included
-
-- the original native `.node` binaries used for low-level screenshot and input control
-
-Those binaries were not present in the extracted local source tree, so this project deliberately exposes clear runtime injection points instead of pretending the repository is more complete than it is.
-
-## Project Personality
-
-This repo is optimized for people who care about the difference between:
-
-- "I copied some internal files into a folder"
-- and "I turned a buried subsystem into a credible standalone project"
-
-That means the project tries to be honest, legible, and extensible:
-
-- honest about missing native pieces
-- legible in structure and architecture
-- extensible for local agent and MCP experimentation
-
-## Quick Start
-
-### 1. Install dependencies
+### 1. Clone and install Node deps
 
 ```bash
+git clone https://github.com/wimi321/claude-computer-use-mcp.git
+cd claude-computer-use-mcp
 npm install
-```
-
-### 2. Point the server at the native modules
-
-```bash
-export COMPUTER_USE_SWIFT_NODE_PATH="/absolute/path/to/computer_use.node"
-export COMPUTER_USE_INPUT_NODE_PATH="/absolute/path/to/computer-use-input.node"
-```
-
-### 3. Build
-
-```bash
 npm run build
 ```
 
-### 4. Run
+### 2. Start the server
 
 ```bash
 node dist/cli.js
 ```
 
-## Drop-In MCP Example
+On first launch, the project will automatically:
 
-Use [examples/mcp-config.json](./examples/mcp-config.json) as a starting point.
+- create `.runtime/venv`
+- bootstrap `pip` if needed
+- install the Python runtime dependencies from `runtime/requirements.txt`
+
+No Claude desktop app. No private native modules. No local extraction path required.
+
+## MCP Configuration
+
+Example config:
 
 ```json
 {
@@ -117,8 +98,7 @@ Use [examples/mcp-config.json](./examples/mcp-config.json) as a starting point.
         "/absolute/path/to/claude-computer-use-mcp/dist/cli.js"
       ],
       "env": {
-        "COMPUTER_USE_SWIFT_NODE_PATH": "/absolute/path/to/computer_use.node",
-        "COMPUTER_USE_INPUT_NODE_PATH": "/absolute/path/to/computer-use-input.node",
+        "CLAUDE_COMPUTER_USE_DEBUG": "0",
         "CLAUDE_COMPUTER_USE_COORDINATE_MODE": "pixels"
       }
     }
@@ -126,132 +106,115 @@ Use [examples/mcp-config.json](./examples/mcp-config.json) as a starting point.
 }
 ```
 
-## Runtime Configuration
-
-Required:
-
-```bash
-export COMPUTER_USE_SWIFT_NODE_PATH="/absolute/path/to/computer_use.node"
-export COMPUTER_USE_INPUT_NODE_PATH="/absolute/path/to/computer-use-input.node"
-```
-
-Optional:
-
-```bash
-export CLAUDE_COMPUTER_USE_DEBUG=1
-export CLAUDE_COMPUTER_USE_ENABLED=1
-export CLAUDE_COMPUTER_USE_COORDINATE_MODE=pixels
-export CLAUDE_COMPUTER_USE_PIXEL_VALIDATION=0
-export CLAUDE_COMPUTER_USE_HIDE_BEFORE_ACTION=1
-export CLAUDE_COMPUTER_USE_AUTO_TARGET_DISPLAY=1
-export CLAUDE_COMPUTER_USE_CLIPBOARD_GUARD=1
-```
-
-There is also a copy-pasteable shell template at [examples/env.sh.example](./examples/env.sh.example).
-
-## Architecture
-
-```mermaid
-flowchart LR
-    A["Codex / MCP Client"] --> B["claude-computer-use-mcp"]
-    B --> C["Vendorized TS Core"]
-    B --> D["macOS Host Adapter"]
-    D --> E["computer_use.node"]
-    D --> F["computer-use-input.node"]
-```
-
-### Public Layer
-
-This repo contains the reusable orchestration layer:
-
-- MCP tool definitions
-- tool dispatch
-- session binding
-- executor interface
-- host adapter
-- lock handling
-- skill packaging
-
-### Native Layer
-
-The real device-control implementation is expected to come from:
-
-- `COMPUTER_USE_SWIFT_NODE_PATH`
-- `COMPUTER_USE_INPUT_NODE_PATH`
-
-That separation is intentional. It keeps the repository honest about what was recoverable and what still depends on original native artifacts.
-
-## Project Layout
-
-```text
-.
-├── assets/hero.svg                  # repo banner
-├── examples/                        # MCP and env examples
-├── skill/computer-use-macos/        # top-level Codex skill
-├── src/cli.ts                       # server entrypoint
-├── src/server.ts                    # MCP server wiring
-├── src/session.ts                   # session state + permission behavior
-├── src/computer-use/                # macOS host-side adapter code
-├── src/lib/                         # local utilities
-└── src/vendor/computer-use-mcp/     # extracted TS computer-use layer
-```
+See [`examples/mcp-config.json`](./examples/mcp-config.json).
 
 ## Codex Skill
 
-The top-level Codex skill is included at:
+This repo also ships a top-level skill at [`skill/computer-use-macos`](./skill/computer-use-macos).
 
-- [skill/computer-use-macos/SKILL.md](./skill/computer-use-macos/SKILL.md)
-
-Install it locally:
+Install it with:
 
 ```bash
-mkdir -p "$HOME/.codex/skills/computer-use-macos"
-rsync -a skill/computer-use-macos/ "$HOME/.codex/skills/computer-use-macos/"
+bash skill/computer-use-macos/scripts/install.sh
 ```
 
-## Important Behavior Differences
+The installer copies:
 
-This standalone adaptation is intentionally pragmatic.
+- the skill metadata
+- the bundled standalone project
+- the runtime bootstrap files
 
-- `request_access` is auto-approved inside this host
-- the original Claude Code permission UI is not bundled here
-- this is best treated as trusted-local infrastructure
-- startup fails fast when native module paths are missing
+After installation, the default project path becomes:
 
-## Limitations
+```bash
+~/.codex/skills/computer-use-macos/project
+```
 
-- macOS only
-- native `.node` binaries are not included
-- no bundled desktop approval UI
-- not yet packaged as a totally self-contained npm distribution
-- best suited to local power-user, research, and agent-tooling workflows
+That means the skill can work even if the original clone disappears.
 
-## Roadmap
+## Runtime Notes
 
-- add pluggable approval callbacks instead of unconditional auto-approve
-- support cleaner native-module packaging
-- add more MCP client integration recipes
-- make embedding easier in other local agent runtimes
-- document a reproducible path for reconnecting native binaries
+### Permissions
 
-## Development
+macOS still requires:
 
-Build:
+- Accessibility
+- Screen Recording
+
+The standalone host checks both and reports them through the MCP flow.
+
+### Screenshot Filtering
+
+This standalone runtime reports `screenshotFiltering: none`.
+
+That means:
+
+- screenshots are not compositor-filtered
+- the original allowlist / permission / tier logic still protects actions at the MCP layer
+
+### Scope
+
+This project is intentionally focused on macOS desktop computer use:
+
+- screenshots
+- mouse control
+- keyboard input
+- frontmost app inspection
+- installed/running app discovery
+- window-to-display mapping
+- clipboard access
+- app launch
+
+## Example Commands
 
 ```bash
 npm run build
+node dist/cli.js
 ```
-
-Type-check only:
 
 ```bash
-npm run check
+node --input-type=module -e "import { callPythonHelper } from './dist/computer-use/pythonBridge.js'; console.log(await callPythonHelper('list_displays', {}));"
 ```
 
-The server intentionally fails with a clear error when native paths are missing. That is by design.
+## Repository Layout
 
-## Attribution
+```text
+src/
+  computer-use/
+    executor.ts
+    hostAdapter.ts
+    pythonBridge.ts
+  vendor/computer-use-mcp/
+runtime/
+  mac_helper.py
+  requirements.txt
+skill/
+  computer-use-macos/
+examples/
+assets/
+```
 
-This repository was extracted and adapted from the Claude Code `computer use` implementation found in the local recovered source tree available during extraction.
+## Environment Flags
 
-It preserves and repackages the reusable TypeScript and host-logic layer, while leaving the unavailable native pieces as explicit runtime dependencies.
+Optional knobs:
+
+- `CLAUDE_COMPUTER_USE_DEBUG=1`
+- `CLAUDE_COMPUTER_USE_COORDINATE_MODE=pixels`
+- `CLAUDE_COMPUTER_USE_CLIPBOARD_PASTE=1`
+- `CLAUDE_COMPUTER_USE_MOUSE_ANIMATION=1`
+- `CLAUDE_COMPUTER_USE_HIDE_BEFORE_ACTION=0`
+
+## Roadmap
+
+- richer app-icon extraction without private APIs
+- stronger app filtering for nested helper bundles
+- broader automated MCP integration tests
+- optional packaged release artifacts for easier distribution
+
+## License
+
+MIT
+
+## Credits
+
+This project preserves and adapts the reusable TypeScript computer-use logic recovered from the Claude Code workflow, then replaces the missing private runtime with a fully standalone public implementation.
