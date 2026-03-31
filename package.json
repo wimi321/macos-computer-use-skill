@@ -2,6 +2,14 @@
   "name": "claude-computer-use-mcp",
   "version": "0.1.0",
   "description": "Extracted macOS Computer Use MCP server from Claude Code, packaged as a standalone GitHub project and Codex skill.",
+  "homepage": "https://github.com/wimi321/claude-computer-use-mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wimi321/claude-computer-use-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wimi321/claude-computer-use-mcp/issues"
+  },
   "type": "module",
   "bin": {
     "claude-computer-use-mcp": "dist/cli.js"
