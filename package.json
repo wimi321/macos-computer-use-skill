@@ -1,0 +1,35 @@
+{
+  "name": "claude-computer-use-mcp",
+  "version": "0.1.0",
+  "description": "Extracted macOS Computer Use MCP server from Claude Code, packaged as a standalone GitHub project and Codex skill.",
+  "type": "module",
+  "bin": {
+    "claude-computer-use-mcp": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli.js",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "computer-use",
+    "claude-code",
+    "macos",
+    "automation"
+  ],
+  "author": "haoc",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}
