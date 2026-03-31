@@ -1,6 +1,6 @@
 ---
 name: computer-use-macos
-version: 0.2.0
+version: 0.2.1
 description: Top-level macOS computer-use skill with a bundled standalone runtime that bootstraps itself without any local Claude installation, private native modules, or extracted app assets.
 tags:
   - skill
