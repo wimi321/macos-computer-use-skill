@@ -33,7 +33,7 @@
     <circle cx="117" cy="109" r="5" fill="#FF6B6B"/>
     <circle cx="136" cy="109" r="5" fill="#FFD166"/>
     <circle cx="155" cy="109" r="5" fill="#7EE787"/>
-    <text x="182" y="115" fill="#B9C6DA" font-family="SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="14">claude-computer-use-mcp</text>
+    <text x="182" y="115" fill="#B9C6DA" font-family="SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="14">macos-computer-use-skill</text>
   </g>
 
   <g>
@@ -64,7 +64,7 @@
     <path d="M955 267V294" stroke="#5BC0EB" stroke-width="3" stroke-linecap="round"/>
 
     <rect x="803" y="296" width="304" height="58" rx="16" fill="#132840" stroke="#37618F"/>
-    <text x="827" y="331" fill="#DBE8F9" font-family="SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="18">claude-computer-use-mcp</text>
+    <text x="827" y="331" fill="#DBE8F9" font-family="SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="18">macos-computer-use-skill</text>
 
     <path d="M955 355V382" stroke="#7EE787" stroke-width="3" stroke-linecap="round"/>
 

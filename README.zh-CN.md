@@ -1,9 +1,9 @@
 <div align="center">
-  <img src="./assets/hero.svg" alt="claude-computer-use-mcp hero" width="100%" />
+  <img src="./assets/hero.svg" alt="macos-computer-use-skill hero" width="100%" />
   <h1>macOS Computer-Use Skill</h1>
   <p><strong>一个面向 macOS 的顶级可移植 skill，内置独立 runtime 与 MCP server。</strong></p>
   <p>
-    <a href="https://github.com/wimi321/claude-computer-use-mcp">GitHub</a>
+    <a href="https://github.com/wimi321/macos-computer-use-skill">GitHub</a>
     ·
     <a href="https://clawhub.ai/wimi321/computer-use-macos">ClawHub</a>
     ·
@@ -72,7 +72,7 @@ clawhub install computer-use-macos
 
 ```mermaid
 flowchart LR
-    A[Codex / MCP Client] --> B[claude-computer-use-mcp]
+    A[Codex / MCP Client] --> B[macos-computer-use-skill]
     B --> C[提取出的 TypeScript MCP 工具层]
     B --> D[独立 Python bridge]
     D --> E[pyautogui]
@@ -88,8 +88,8 @@ flowchart LR
 ### 1. 克隆并安装 Node 依赖
 
 ```bash
-git clone https://github.com/wimi321/claude-computer-use-mcp.git
-cd claude-computer-use-mcp
+git clone https://github.com/wimi321/macos-computer-use-skill.git
+cd macos-computer-use-skill
 npm install
 npm run build
 ```
@@ -118,7 +118,7 @@ node dist/cli.js
     "computer-use": {
       "command": "node",
       "args": [
-        "/absolute/path/to/claude-computer-use-mcp/dist/cli.js"
+        "/absolute/path/to/macos-computer-use-skill/dist/cli.js"
       ],
       "env": {
         "CLAUDE_COMPUTER_USE_DEBUG": "0",

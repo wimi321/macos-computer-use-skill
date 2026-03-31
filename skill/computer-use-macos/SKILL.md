@@ -16,7 +16,7 @@ Use this skill when the task needs a portable macOS computer-use skill bundled w
 
 ## What this skill does
 
-- uses the bundled `claude-computer-use-mcp` project under the installed skill directory
+- uses the bundled `macos-computer-use-skill` project under the installed skill directory
 - builds the standalone MCP server
 - lets the server auto-bootstrap its Python runtime on first launch
 - avoids any dependency on local Claude binaries, `.node` modules, or extracted app assets

@@ -5,6 +5,6 @@ import { errorMessage } from './lib/errors.js'
 try {
   await runServer()
 } catch (error) {
-  process.stderr.write(`claude-computer-use-mcp failed: ${errorMessage(error)}\n`)
+  process.stderr.write(`macos-computer-use-skill failed: ${errorMessage(error)}\n`)
   process.exit(1)
 }

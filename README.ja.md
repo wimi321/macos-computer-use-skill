@@ -1,9 +1,9 @@
 <div align="center">
-  <img src="./assets/hero.svg" alt="claude-computer-use-mcp hero" width="100%" />
+  <img src="./assets/hero.svg" alt="macos-computer-use-skill hero" width="100%" />
   <h1>macOS Computer-Use Skill</h1>
   <p><strong>macOS 向けのトップレベル portable skill。standalone runtime と MCP server を同梱しています。</strong></p>
   <p>
-    <a href="https://github.com/wimi321/claude-computer-use-mcp">GitHub</a>
+    <a href="https://github.com/wimi321/macos-computer-use-skill">GitHub</a>
     ·
     <a href="https://clawhub.ai/wimi321/computer-use-macos">ClawHub</a>
     ·
@@ -72,7 +72,7 @@ macOS 上で以下を実機確認しました。
 
 ```mermaid
 flowchart LR
-    A[Codex / MCP Client] --> B[claude-computer-use-mcp]
+    A[Codex / MCP Client] --> B[macos-computer-use-skill]
     B --> C[抽出した TypeScript MCP ツール層]
     B --> D[Standalone Python bridge]
     D --> E[pyautogui]
@@ -88,8 +88,8 @@ flowchart LR
 ### 1. クローンして Node 依存を入れる
 
 ```bash
-git clone https://github.com/wimi321/claude-computer-use-mcp.git
-cd claude-computer-use-mcp
+git clone https://github.com/wimi321/macos-computer-use-skill.git
+cd macos-computer-use-skill
 npm install
 npm run build
 ```
@@ -116,7 +116,7 @@ Claude Desktop も private native module も不要です。
     "computer-use": {
       "command": "node",
       "args": [
-        "/absolute/path/to/claude-computer-use-mcp/dist/cli.js"
+        "/absolute/path/to/macos-computer-use-skill/dist/cli.js"
       ],
       "env": {
         "CLAUDE_COMPUTER_USE_DEBUG": "0",

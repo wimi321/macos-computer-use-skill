@@ -5,7 +5,7 @@ import { getErrnoCode } from '../lib/errors.js'
 import { logDebug } from '../lib/log.js'
 
 const LOCK_FILENAME = 'computer-use.lock'
-const CONFIG_DIR = join(homedir(), '.claude-computer-use-mcp')
+const CONFIG_DIR = join(homedir(), '.macos-computer-use-skill')
 
 let heldLocally = false
 

@@ -3,7 +3,7 @@
     "computer-use": {
       "command": "node",
       "args": [
-        "/absolute/path/to/claude-computer-use-mcp/dist/cli.js"
+        "/absolute/path/to/macos-computer-use-skill/dist/cli.js"
       ],
       "env": {
         "CLAUDE_COMPUTER_USE_DEBUG": "0",

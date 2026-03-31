@@ -1,15 +1,27 @@
 <div align="center">
-  <img src="./assets/hero.svg" alt="claude-computer-use-mcp hero" width="100%" />
+  <img src="./assets/hero.svg" alt="macos-computer-use-skill hero" width="100%" />
   <h1>macOS Computer-Use Skill</h1>
   <p><strong>A top-level portable skill for macOS with a bundled standalone runtime and MCP server.</strong></p>
   <p>
-    <a href="https://github.com/wimi321/claude-computer-use-mcp">GitHub</a>
+    <a href="https://github.com/wimi321/macos-computer-use-skill">GitHub</a>
+    ·
+    <a href="https://clawhub.ai/wimi321/computer-use-macos">ClawHub</a>
     ·
     <a href="./README.zh-CN.md">简体中文</a>
     ·
     <a href="./README.ja.md">日本語</a>
   </p>
 </div>
+
+## Install From ClawHub
+
+Published on ClawHub as [`computer-use-macos`](https://clawhub.ai/wimi321/computer-use-macos).
+
+```bash
+clawhub install computer-use-macos
+```
+
+If you want the source repo as well, keep reading for the full GitHub setup.
 
 ## Positioning
 
@@ -60,7 +72,7 @@ This repository has been validated locally on macOS with:
 
 ```mermaid
 flowchart LR
-    A[Codex / MCP Client] --> B[claude-computer-use-mcp]
+    A[Codex / MCP Client] --> B[macos-computer-use-skill]
     B --> C[Extracted TypeScript MCP tools]
     B --> D[Standalone Python bridge]
     D --> E[pyautogui]
@@ -76,8 +88,8 @@ flowchart LR
 ### 1. Clone and install Node deps
 
 ```bash
-git clone https://github.com/wimi321/claude-computer-use-mcp.git
-cd claude-computer-use-mcp
+git clone https://github.com/wimi321/macos-computer-use-skill.git
+cd macos-computer-use-skill
 npm install
 npm run build
 ```
@@ -106,7 +118,7 @@ Example config:
     "computer-use": {
       "command": "node",
       "args": [
-        "/absolute/path/to/claude-computer-use-mcp/dist/cli.js"
+        "/absolute/path/to/macos-computer-use-skill/dist/cli.js"
       ],
       "env": {
         "CLAUDE_COMPUTER_USE_DEBUG": "0",
@@ -122,6 +134,16 @@ See [`examples/mcp-config.json`](./examples/mcp-config.json).
 ## Skill Install
 
 This repo ships a top-level skill at [`skill/computer-use-macos`](./skill/computer-use-macos).
+
+You can install it either from ClawHub or from this repository.
+
+### Option A: Install from ClawHub
+
+```bash
+clawhub install computer-use-macos
+```
+
+### Option B: Install from the repo
 
 Install it with:
 
