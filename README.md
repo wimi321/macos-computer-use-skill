@@ -3,6 +3,10 @@
 </p>
 
 <p align="center">
+  English | <a href="./README.zh-CN.md">简体中文</a> | <a href="./README.ja.md">日本語</a>
+</p>
+
+<p align="center">
   <a href="https://github.com/wimi321/claude-computer-use-mcp"><img src="https://img.shields.io/badge/platform-macOS-0F172A?style=for-the-badge&logo=apple&logoColor=white" alt="macOS" /></a>
   <a href="https://www.npmjs.com/"><img src="https://img.shields.io/badge/node-%3E%3D20-0B1220?style=for-the-badge&logo=node.js&logoColor=7EE787" alt="Node 20+" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-13233D?style=for-the-badge" alt="MIT License" /></a>
