@@ -1,131 +1,145 @@
+<p align="right">
+  <a href="./README.md">English</a> ·
+  <a href="./README.ja.md">日本語</a>
+</p>
+
 <div align="center">
-  <img src="./assets/hero.svg" alt="macos-computer-use-skill hero" width="100%" />
+  <img src="./assets/hero.svg" alt="macOS Computer-Use Skill" width="100%" />
   <h1>macOS Computer-Use Skill</h1>
-  <p><strong>一个面向 macOS 的顶级可移植 skill，内置独立 runtime 与 MCP server。</strong></p>
+  <p><strong>独立 MCP 服务器，让 AI 智能体完整控制 macOS 图形界面 — 截图、鼠标、键盘、应用、剪贴板、多显示器 — 零私有依赖。</strong></p>
+  <br />
   <p>
-    <a href="https://github.com/wimi321/macos-computer-use-skill">GitHub</a>
-    ·
+    <img src="https://img.shields.io/badge/version-0.2.2-blue?style=flat-square" alt="version" />
+    <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
+    <img src="https://img.shields.io/badge/platform-macOS-lightgrey?style=flat-square&logo=apple" alt="platform" />
+    <img src="https://img.shields.io/badge/node-%3E%3D20-339933?style=flat-square&logo=node.js" alt="node" />
+    <img src="https://img.shields.io/badge/python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="python" />
+    <img src="https://img.shields.io/badge/MCP-compatible-8A2BE2?style=flat-square" alt="MCP" />
+  </p>
+  <p>
+    <a href="#快速开始">快速开始</a> ·
+    <a href="#工具列表">工具列表</a> ·
+    <a href="#mcp-配置">MCP 配置</a> ·
     <a href="https://clawhub.ai/wimi321/computer-use-macos">ClawHub</a>
-    ·
-    <a href="./README.md">English</a>
-    ·
-    <a href="./README.ja.md">日本語</a>
   </p>
 </div>
 
-## ClawHub 安装
+---
 
-这个 skill 已发布到 ClawHub，slug 是 [`computer-use-macos`](https://clawhub.ai/wimi321/computer-use-macos)。
+## 核心能力
 
-```bash
-clawhub install computer-use-macos
-```
+| | 能力 | 说明 |
+|---|---|---|
+| **视觉** | 截图与显示器 | 截取任意显示器画面，枚举监视器，区域放大 |
+| **输入** | 鼠标与键盘 | 点击、拖拽、滚动、输入文本、组合键、长按 — 内置 IME 安全的剪贴板路由 |
+| **应用** | 应用控制 | 启动应用、识别前台应用、列举已安装/运行中的应用、分层权限模型 |
+| **剪贴板** | 读写 | 完整剪贴板访问，支持粘贴驱动的工作流 |
+| **批量** | 动作批处理 | 在单次 MCP 调用中链式执行多个操作 |
+| **运行时** | 零配置启动 | 首次运行自动创建 Python virtualenv 并安装依赖 |
+| **可移植** | Skill 打包 | 作为独立 skill 分发 — 安装即用，不依赖源码仓库 |
+| **公开** | 无私有依赖 | 完全基于公开包构建：Node.js、Python、pyautogui、mss、Pillow、pyobjc |
 
-如果你还想拿到完整源码仓库，下面继续看 GitHub 方式。
+## 快速开始
 
-## 项目定位
-
-这个仓库本质上同时是：
-
-- 一个顶级 `skill`
-- 一套独立的 macOS runtime
-- 一个给 agent 生态使用的 computer-use MCP server
-
-它不只是给 Codex 用，skill 这种交付方式本身就是为了跨 agent 生态可移植。
-
-## 这个项目解决什么问题
-
-目标只有一个：
-
-- 不依赖本机 Claude
-- 不依赖私有 `.node` 二进制
-- 不依赖“先从某个安装目录里捞内部资产”
-- skill 装上之后就能把 computer-use 跑起来
-
-这版仓库已经按这个目标重构完成。
-
-## 你现在拿到的能力
-
-- 顶级 macOS computer-use skill
-- 独立 MCP server：截图、鼠标、键盘、应用启动、窗口/显示器信息、剪贴板
-- 只使用公开依赖：`Node.js + Python + pyautogui + mss + Pillow + pyobjc`
-- 首次运行自动自举：自动创建 `.runtime/venv` 并安装 Python 依赖
-- 安装 skill 时会把完整项目一起复制到 `~/.codex/skills/computer-use-macos/project`
-- 保留并复用提取出来的 TypeScript computer-use 工具链，但底层执行器已换成真正独立的 runtime
-
-## 已完成的本地验证
-
-已经在一台真实 macOS 机器上实际验证：
-
-- runtime 自举成功
-- 权限检测成功
-- 显示器枚举成功
-- 截图成功
-- 前台应用识别成功
-- 鼠标位置对应应用识别成功
-- 窗口到显示器的归属解析成功
-- 剪贴板读写成功
-- 走 MCP `type` 工具链路的 GUI 输入 smoke test 成功
-- MCP server 成功启动
-
-## 0.2.2 修复了什么
-
-这次真机测试里抓到了一个关键问题：在中文输入法环境下，普通英文文本如果按“逐键输入”执行，内容会被输入法状态污染，连纯 ASCII 都可能打错。
-
-`0.2.2` 已修复这一点：在 macOS 上，只要具备剪贴板写权限，普通多字符文本会优先走剪贴板粘贴路径，而不是一键一键敲。这样 skill 安装后在真实中文工作环境里会稳定得多。
-
-## 架构
-
-```mermaid
-flowchart LR
-    A[Codex / MCP Client] --> B[macos-computer-use-skill]
-    B --> C[提取出的 TypeScript MCP 工具层]
-    B --> D[独立 Python bridge]
-    D --> E[pyautogui]
-    D --> F[mss + Pillow]
-    D --> G[pyobjc Cocoa + Quartz]
-    E --> H[鼠标 / 键盘]
-    F --> I[截图]
-    G --> J[应用 / 显示器 / 剪贴板 / 窗口]
-```
-
-## 安装
-
-### 1. 克隆并安装 Node 依赖
+**1. 克隆并构建**
 
 ```bash
 git clone https://github.com/wimi321/macos-computer-use-skill.git
 cd macos-computer-use-skill
-npm install
-npm run build
+npm install && npm run build
 ```
 
-### 2. 启动 server
+**2. 启动 MCP 服务器**
 
 ```bash
 node dist/cli.js
 ```
 
-首次启动时项目会自动：
+首次启动时服务器会自动在 `.runtime/venv` 中创建 Python 虚拟环境并安装所有运行时依赖。不需要 Claude 桌面应用，不需要任何私有原生模块。
 
-- 创建 `.runtime/venv`
-- 必要时自动补 `pip`
-- 根据 `runtime/requirements.txt` 安装 Python 运行时依赖
+**3. 或从 ClawHub 安装**
 
-不需要 Claude Desktop。也不需要任何私有 native 模块。
+```bash
+clawhub install computer-use-macos
+```
+
+> [!NOTE]
+> macOS 要求宿主进程具备 **辅助功能（Accessibility）** 和 **屏幕录制（Screen Recording）** 权限。服务器启动时会自动检测并通过 MCP 上报状态。
+
+## 架构
+
+```mermaid
+flowchart LR
+    A[AI 智能体 / MCP 客户端] --> B[MCP 服务器<br/>TypeScript + stdio]
+    B --> C[工具层<br/>28 个 MCP 工具]
+    B --> D[Python 桥接<br/>自动引导 venv]
+    D --> E[pyautogui]
+    D --> F[mss + Pillow]
+    D --> G[pyobjc<br/>Cocoa + Quartz]
+    E --> H[鼠标 / 键盘]
+    F --> I[截图]
+    G --> J[应用 / 显示器<br/>剪贴板 / 窗口]
+```
+
+## 工具列表
+
+### 视觉与显示器
+
+| 工具 | 说明 |
+|---|---|
+| `screenshot` | 将当前显示器截图为 JPEG 图像 |
+| `zoom` | 裁切并放大上一张截图的指定区域 |
+| `switch_display` | 将截图目标切换到另一个显示器 |
+
+### 输入
+
+| 工具 | 说明 |
+|---|---|
+| `left_click` | 在指定坐标左键单击 |
+| `double_click` | 双击 |
+| `triple_click` | 三击（选择整段/整行） |
+| `right_click` | 右键（上下文菜单） |
+| `middle_click` | 中键点击 |
+| `left_click_drag` | 在两点之间拖拽 |
+| `left_mouse_down` | 按下并保持左键 |
+| `left_mouse_up` | 释放左键 |
+| `mouse_move` | 移动光标但不点击 |
+| `scroll` | 在指定坐标向任意方向滚动 |
+| `type` | 输入文本（macOS 上使用剪贴板路由以规避 IME 问题） |
+| `key` | 按下组合键（如 `cmd+c`、`ctrl+shift+t`） |
+| `hold_key` | 按住某个键一段时间 |
+| `cursor_position` | 获取当前光标坐标 |
+
+### 应用与系统
+
+| 工具 | 说明 |
+|---|---|
+| `open_application` | 按名称启动 macOS 应用 |
+| `request_access` | 请求与某个应用交互的权限 |
+| `list_granted_applications` | 列出当前会话已授权控制的应用 |
+| `read_clipboard` | 读取系统剪贴板 |
+| `write_clipboard` | 写入系统剪贴板 |
+| `wait` | 暂停指定时长 |
+
+### 批量与教学模式
+
+| 工具 | 说明 |
+|---|---|
+| `computer_batch` | 在单次调用中执行多个操作 |
+| `request_teach_access` | 请求教学工作流的提升权限 |
+| `teach_step` | 教学模式下的单步操作 |
+| `teach_batch` | 教学模式下的批量操作 |
 
 ## MCP 配置
 
-示例：
+添加到你的 MCP 客户端配置中：
 
 ```json
 {
   "mcpServers": {
     "computer-use": {
       "command": "node",
-      "args": [
-        "/absolute/path/to/macos-computer-use-skill/dist/cli.js"
-      ],
+      "args": ["/absolute/path/to/macos-computer-use-skill/dist/cli.js"],
       "env": {
         "CLAUDE_COMPUTER_USE_DEBUG": "0",
         "CLAUDE_COMPUTER_USE_COORDINATE_MODE": "pixels"
@@ -135,141 +149,94 @@ node dist/cli.js
 }
 ```
 
-参考 [`examples/mcp-config.json`](./examples/mcp-config.json)。
+完整示例参考 [`examples/mcp-config.json`](./examples/mcp-config.json)。
 
 ## Skill 安装
 
-仓库自带顶级 skill：[`skill/computer-use-macos`](./skill/computer-use-macos)
+本项目以自包含 skill 形式分发，位于 [`skill/computer-use-macos`](./skill/computer-use-macos)。
 
-你现在可以通过 ClawHub 直接安装，也可以从这个仓库本地安装。
-
-### 方式 A：从 ClawHub 安装
+**从 ClawHub 安装：**
 
 ```bash
 clawhub install computer-use-macos
 ```
 
-### 方式 B：从仓库安装
-
-安装：
+**从仓库安装：**
 
 ```bash
 bash skill/computer-use-macos/scripts/install.sh
 ```
 
-安装脚本会一起复制：
+安装器会将完整项目复制到 `~/.codex/skills/computer-use-macos/project` — 即使删除原始克隆，skill 仍可正常工作。
 
-- skill 元数据
-- 独立项目本体
-- runtime 自举文件
+## 环境变量
 
-安装后默认项目路径为：
+| 变量 | 默认值 | 说明 |
+|---|---|---|
+| `CLAUDE_COMPUTER_USE_DEBUG` | `0` | 启用详细调试日志 |
+| `CLAUDE_COMPUTER_USE_COORDINATE_MODE` | `pixels` | 坐标模式：`pixels` 或 `normalized_0_100` |
+| `CLAUDE_COMPUTER_USE_CLIPBOARD_PASTE` | `1` | 优先使用剪贴板输入（规避 IME 问题） |
+| `CLAUDE_COMPUTER_USE_MOUSE_ANIMATION` | `0` | 鼠标移动动画 |
+| `CLAUDE_COMPUTER_USE_HIDE_BEFORE_ACTION` | `0` | 操作前隐藏遮罩窗口 |
 
-```bash
-~/.codex/skills/computer-use-macos/project
-```
+## 系统要求
 
-也就是说，即使原始 clone 被删掉，已安装的 skill 仍然有自己的可运行项目副本。
+| 要求 | 版本 |
+|---|---|
+| macOS | 12+（Monterey 或更高） |
+| Node.js | 20+ |
+| Python | 3.10+（macOS 自带或通过 Homebrew 安装） |
+| 权限 | 辅助功能 + 屏幕录制 |
 
-## 运行说明
-
-### 权限
-
-macOS 仍然需要：
-
-- Accessibility
-- Screen Recording
-
-这个 standalone host 会在 MCP 流程中检测并反馈这两项状态。
-
-### 截图过滤
-
-当前 standalone runtime 声明的是 `screenshotFiltering: none`。
-
-含义是：
-
-- 截图本身不是 compositor 级过滤
-- 但操作权限、allowlist、tier 限制仍由 MCP 层逻辑继续执行
-
-### 平台范围
-
-当前项目明确只支持 `macOS` 桌面 computer use，这一版还不是 Windows 或 Linux backend。
-
-当前覆盖：
-
-- 截图
-- 鼠标控制
-- 键盘输入
-- 前台应用识别
-- 已安装 / 运行中应用枚举
-- 窗口到显示器映射
-- 剪贴板访问
-- 应用启动
-
-## 验证矩阵
-
-这次在本机完成的真实测试包括：
-
-- `npm run check`
-- `npm run build`
-- `runtime/mac_helper.py` 的 Python 编译检查
-- 权限探测：Accessibility 与 Screen Recording 均已授权
-- 当前显示器枚举
-- 真实桌面截图采集
-- 运行中 / 已安装应用枚举
-- 前台应用识别
-- 将 skill 安装到全新 `CODEX_HOME`
-- 在已安装 skill 的 `project/` 内执行 `npm install && npm run build`
-- 通过 TextEdit 对 MCP `type` 工具做真实 GUI 输入回读校验，结果精确匹配
-
-## 常用命令
-
-```bash
-npm run build
-node dist/cli.js
-```
-
-```bash
-node --input-type=module -e "import { callPythonHelper } from './dist/computer-use/pythonBridge.js'; console.log(await callPythonHelper('list_displays', {}));"
-```
+Python 依赖（`pyautogui`、`mss`、`Pillow`、`pyobjc`）会在首次运行时自动安装到独立的虚拟环境中。
 
 ## 仓库结构
 
-```text
-src/
-  computer-use/
-    executor.ts
-    hostAdapter.ts
-    pythonBridge.ts
-  vendor/computer-use-mcp/
-runtime/
-  mac_helper.py
-  requirements.txt
-skill/
-  computer-use-macos/
-examples/
-assets/
 ```
-
-## 可选环境变量
-
-- `CLAUDE_COMPUTER_USE_DEBUG=1`
-- `CLAUDE_COMPUTER_USE_COORDINATE_MODE=pixels`
-- `CLAUDE_COMPUTER_USE_CLIPBOARD_PASTE=1`
-- `CLAUDE_COMPUTER_USE_MOUSE_ANIMATION=1`
-- `CLAUDE_COMPUTER_USE_HIDE_BEFORE_ACTION=0`
+macos-computer-use-skill/
+├── src/
+│   ├── cli.ts                    # 入口
+│   ├── server.ts                 # MCP 服务器配置
+│   ├── session.ts                # 会话上下文工厂
+│   ├── computer-use/
+│   │   ├── executor.ts           # macOS 执行器（桥接 Python）
+│   │   ├── pythonBridge.ts       # Venv 引导 + Python IPC
+│   │   ├── hostAdapter.ts        # 宿主适配器工厂
+│   │   └── ...
+│   └── vendor/computer-use-mcp/
+│       ├── mcpServer.ts          # MCP 服务器工厂
+│       ├── toolCalls.ts          # 工具调度逻辑
+│       ├── tools.ts              # MCP 工具 schema
+│       └── ...
+├── runtime/
+│   ├── mac_helper.py             # Python 运行时（pyautogui + pyobjc）
+│   └── requirements.txt
+├── skill/
+│   └── computer-use-macos/       # 可移植 skill 包
+├── examples/
+│   ├── mcp-config.json
+│   └── env.sh.example
+├── assets/
+│   └── hero.svg
+├── package.json
+└── tsconfig.json
+```
 
 ## 路线图
 
-- 更好的 app icon 提取
-- 更稳的嵌套 helper app 过滤
-- 更完整的 MCP 集成测试
-- 提供更易分发的打包产物
+- [ ] 无需私有 API 的应用图标提取
+- [ ] 更精准的嵌套 helper 应用过滤
+- [ ] 自动化 MCP 集成测试套件
+- [ ] 预构建发布产物以简化分发
+
+## 贡献
+
+欢迎贡献。请参阅 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解指南。
 
 ## License
 
-MIT
+[MIT](./LICENSE)
 
-## Credits
+## 致谢
 
-这个项目保留了从 Claude Code computer-use 工作流中提炼出来的可复用 TypeScript 逻辑，并用一套完全独立、公开可安装的 macOS runtime 替换了缺失的私有执行层。
+本项目从 Claude Code 工作流中提取并复用了可重用的 TypeScript computer-use 逻辑，并用一套完全独立、公开可安装的 macOS 实现替换了私有原生运行时。基于 [Model Context Protocol](https://modelcontextprotocol.io) 构建。
