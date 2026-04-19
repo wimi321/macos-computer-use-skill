@@ -1,131 +1,145 @@
+<p align="right">
+  <a href="./README.zh-CN.md">简体中文</a> ·
+  <a href="./README.ja.md">日本語</a>
+</p>
+
 <div align="center">
-  <img src="./assets/hero.svg" alt="macos-computer-use-skill hero" width="100%" />
+  <img src="./assets/hero.svg" alt="macOS Computer-Use Skill" width="100%" />
   <h1>macOS Computer-Use Skill</h1>
-  <p><strong>A top-level portable skill for macOS with a bundled standalone runtime and MCP server.</strong></p>
+  <p><strong>Standalone MCP server that gives AI agents full GUI control over macOS — screenshots, mouse, keyboard, apps, clipboard, and multi-display — with zero private dependencies.</strong></p>
+  <br />
   <p>
-    <a href="https://github.com/wimi321/macos-computer-use-skill">GitHub</a>
-    ·
+    <img src="https://img.shields.io/badge/version-0.2.2-blue?style=flat-square" alt="version" />
+    <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
+    <img src="https://img.shields.io/badge/platform-macOS-lightgrey?style=flat-square&logo=apple" alt="platform" />
+    <img src="https://img.shields.io/badge/node-%3E%3D20-339933?style=flat-square&logo=node.js" alt="node" />
+    <img src="https://img.shields.io/badge/python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="python" />
+    <img src="https://img.shields.io/badge/MCP-compatible-8A2BE2?style=flat-square" alt="MCP" />
+  </p>
+  <p>
+    <a href="#quick-start">Quick Start</a> ·
+    <a href="#available-tools">Tools</a> ·
+    <a href="#mcp-configuration">MCP Config</a> ·
     <a href="https://clawhub.ai/wimi321/computer-use-macos">ClawHub</a>
-    ·
-    <a href="./README.zh-CN.md">简体中文</a>
-    ·
-    <a href="./README.ja.md">日本語</a>
   </p>
 </div>
 
-## Install From ClawHub
+---
 
-Published on ClawHub as [`computer-use-macos`](https://clawhub.ai/wimi321/computer-use-macos).
+## Features
 
-```bash
-clawhub install computer-use-macos
-```
+| | Feature | Description |
+|---|---|---|
+| **Vision** | Screenshot & Display | Capture any display, enumerate monitors, zoom into regions |
+| **Input** | Mouse & Keyboard | Click, drag, scroll, type, key combos, hold keys — with IME-safe clipboard routing |
+| **Apps** | Application Control | Launch apps, detect frontmost app, list installed/running apps, tiered permission model |
+| **Clipboard** | Read & Write | Full clipboard access for paste-based workflows |
+| **Batch** | Action Batching | Chain multiple actions in a single MCP call for speed |
+| **Runtime** | Zero-Config Bootstrap | Auto-creates Python virtualenv and installs dependencies on first run |
+| **Portable** | Skill Packaging | Ships as a standalone skill — install once, works without the source repo |
+| **Public** | No Private Dependencies | Built entirely on public packages: Node.js, Python, pyautogui, mss, Pillow, pyobjc |
 
-If you want the source repo as well, keep reading for the full GitHub setup.
+## Quick Start
 
-## Positioning
-
-This repository is best understood as:
-
-- a top-level `skill`
-- a bundled standalone macOS runtime
-- a computer-use MCP server for agent ecosystems
-
-It is not just for Codex. The skill packaging is intentionally portable, so the same project can be adapted for ecosystems that consume skill-style distributions.
-
-## Why This Project Exists
-
-The original Claude Code computer-use stack was excellent, but the user requirement here was stricter:
-
-- no piggybacking on a local Claude install
-- no private `.node` binaries
-- no "works if you already extracted internal assets"
-- install the skill, launch the server, and use it
-
-This repository now delivers exactly that on macOS.
-
-## What You Get
-
-- top-level macOS computer-use skill
-- standalone MCP server for screenshots, mouse, keyboard, app launch, display switching context, and clipboard
-- public dependency chain only: `Node.js + Python + pyautogui + mss + Pillow + pyobjc`
-- first-run runtime bootstrap: the server creates its own virtualenv and installs dependencies automatically
-- bundled skill install that copies the full project into `~/.codex/skills/computer-use-macos/project`
-- extracted TypeScript tool layer from the original computer-use workflow, re-wired to a fully independent backend
-
-## Current Status
-
-This repository has been validated locally on a real macOS machine with:
-
-- runtime bootstrap
-- permission checks
-- display enumeration
-- screenshot capture
-- frontmost app detection
-- app-under-point lookup
-- window-to-display resolution
-- clipboard read/write
-- MCP `type` tool GUI typing smoke tests
-- MCP server startup
-
-## What Was Fixed In 0.2.2
-
-During real-device testing, we hit a macOS-specific bug: under a Chinese IME/input source, ordinary ASCII text could be corrupted when the tool typed one key at a time.
-
-Version `0.2.2` fixes that by preferring clipboard-routed typing on macOS for normal multi-character text when clipboard write is available. That keeps the standalone skill usable even when the current input source is not plain U.S. keyboard mode.
-
-## Architecture
-
-```mermaid
-flowchart LR
-    A[Codex / MCP Client] --> B[macos-computer-use-skill]
-    B --> C[Extracted TypeScript MCP tools]
-    B --> D[Standalone Python bridge]
-    D --> E[pyautogui]
-    D --> F[mss + Pillow]
-    D --> G[pyobjc Cocoa + Quartz]
-    E --> H[Mouse / Keyboard]
-    F --> I[Screenshots]
-    G --> J[Apps / Displays / Clipboard / Windows]
-```
-
-## Install
-
-### 1. Clone and install Node deps
+**1. Clone & build**
 
 ```bash
 git clone https://github.com/wimi321/macos-computer-use-skill.git
 cd macos-computer-use-skill
-npm install
-npm run build
+npm install && npm run build
 ```
 
-### 2. Start the server
+**2. Run the MCP server**
 
 ```bash
 node dist/cli.js
 ```
 
-On first launch, the project will automatically:
+On first launch the server automatically creates a Python virtualenv in `.runtime/venv` and installs all runtime dependencies. No Claude desktop app, no private native modules.
 
-- create `.runtime/venv`
-- bootstrap `pip` if needed
-- install the Python runtime dependencies from `runtime/requirements.txt`
+**3. Or install from ClawHub**
 
-No Claude desktop app. No private native modules. No local extraction path required.
+```bash
+clawhub install computer-use-macos
+```
+
+> [!NOTE]
+> macOS requires **Accessibility** and **Screen Recording** permissions for the host process. The server checks both on startup and reports status through MCP.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    A[AI Agent / MCP Client] --> B[MCP Server<br/>TypeScript + stdio]
+    B --> C[Tool Layer<br/>28 MCP tools]
+    B --> D[Python Bridge<br/>auto-bootstrapped venv]
+    D --> E[pyautogui]
+    D --> F[mss + Pillow]
+    D --> G[pyobjc<br/>Cocoa + Quartz]
+    E --> H[Mouse / Keyboard]
+    F --> I[Screenshots]
+    G --> J[Apps / Displays<br/>Clipboard / Windows]
+```
+
+## Available Tools
+
+### Vision & Display
+
+| Tool | Description |
+|---|---|
+| `screenshot` | Capture the current display as a JPEG image |
+| `zoom` | Crop and zoom into a region of the last screenshot |
+| `switch_display` | Switch the active capture target to a different monitor |
+
+### Input
+
+| Tool | Description |
+|---|---|
+| `left_click` | Left-click at a coordinate |
+| `double_click` | Double-click at a coordinate |
+| `triple_click` | Triple-click (select paragraph/line) |
+| `right_click` | Right-click (context menu) |
+| `middle_click` | Middle-click |
+| `left_click_drag` | Click-and-drag between two points |
+| `left_mouse_down` | Press and hold the left mouse button |
+| `left_mouse_up` | Release the left mouse button |
+| `mouse_move` | Move the cursor without clicking |
+| `scroll` | Scroll in any direction at a coordinate |
+| `type` | Type text (clipboard-routed on macOS to avoid IME corruption) |
+| `key` | Press a key combo (e.g. `cmd+c`, `ctrl+shift+t`) |
+| `hold_key` | Hold a key for a duration |
+| `cursor_position` | Get the current cursor coordinates |
+
+### Application & System
+
+| Tool | Description |
+|---|---|
+| `open_application` | Launch a macOS application by name |
+| `request_access` | Request access to interact with an application |
+| `list_granted_applications` | List apps the current session has permission to control |
+| `read_clipboard` | Read the system clipboard |
+| `write_clipboard` | Write to the system clipboard |
+| `wait` | Pause for a specified duration |
+
+### Batch & Teach Mode
+
+| Tool | Description |
+|---|---|
+| `computer_batch` | Execute multiple actions in a single call |
+| `request_teach_access` | Request elevated access for teaching workflows |
+| `teach_step` | Single-step action in teach mode |
+| `teach_batch` | Batch actions in teach mode |
 
 ## MCP Configuration
 
-Example config:
+Add to your MCP client config:
 
 ```json
 {
   "mcpServers": {
     "computer-use": {
       "command": "node",
-      "args": [
-        "/absolute/path/to/macos-computer-use-skill/dist/cli.js"
-      ],
+      "args": ["/absolute/path/to/macos-computer-use-skill/dist/cli.js"],
       "env": {
         "CLAUDE_COMPUTER_USE_DEBUG": "0",
         "CLAUDE_COMPUTER_USE_COORDINATE_MODE": "pixels"
@@ -135,143 +149,94 @@ Example config:
 }
 ```
 
-See [`examples/mcp-config.json`](./examples/mcp-config.json).
+See [`examples/mcp-config.json`](./examples/mcp-config.json) for a ready-to-use template.
 
 ## Skill Install
 
-This repo ships a top-level skill at [`skill/computer-use-macos`](./skill/computer-use-macos).
+This project ships as a self-contained skill at [`skill/computer-use-macos`](./skill/computer-use-macos).
 
-You can install it either from ClawHub or from this repository.
-
-### Option A: Install from ClawHub
+**From ClawHub:**
 
 ```bash
 clawhub install computer-use-macos
 ```
 
-### Option B: Install from the repo
-
-Install it with:
+**From the repo:**
 
 ```bash
 bash skill/computer-use-macos/scripts/install.sh
 ```
 
-The installer copies:
+The installer copies the full project to `~/.codex/skills/computer-use-macos/project` — the skill keeps working even if the original clone is removed.
 
-- the skill metadata
-- the bundled standalone project
-- the runtime bootstrap files
+## Environment Variables
 
-After installation, the default project path becomes:
+| Variable | Default | Description |
+|---|---|---|
+| `CLAUDE_COMPUTER_USE_DEBUG` | `0` | Enable verbose debug logging |
+| `CLAUDE_COMPUTER_USE_COORDINATE_MODE` | `pixels` | Coordinate mode: `pixels` or `normalized_0_100` |
+| `CLAUDE_COMPUTER_USE_CLIPBOARD_PASTE` | `1` | Prefer clipboard-based typing (IME-safe) |
+| `CLAUDE_COMPUTER_USE_MOUSE_ANIMATION` | `0` | Animate mouse movement |
+| `CLAUDE_COMPUTER_USE_HIDE_BEFORE_ACTION` | `0` | Hide overlay windows before actions |
 
-```bash
-~/.codex/skills/computer-use-macos/project
-```
+## Requirements
 
-That means the installed skill can work even if the original clone disappears.
+| Requirement | Version |
+|---|---|
+| macOS | 12+ (Monterey or later) |
+| Node.js | 20+ |
+| Python | 3.10+ (ships with macOS or via Homebrew) |
+| Permissions | Accessibility + Screen Recording |
 
-## Runtime Notes
-
-### Permissions
-
-macOS still requires:
-
-- Accessibility
-- Screen Recording
-
-The standalone host checks both and reports them through the MCP flow.
-
-### Screenshot Filtering
-
-This standalone runtime reports `screenshotFiltering: none`.
-
-That means:
-
-- screenshots are not compositor-filtered
-- the original allowlist / permission / tier logic still protects actions at the MCP layer
-
-### Platform Scope
-
-This project is intentionally focused on `macOS` desktop computer use. The current runtime is not a Windows or Linux backend.
-
-Covered capabilities:
-
-- screenshots
-- mouse control
-- keyboard input
-- frontmost app inspection
-- installed/running app discovery
-- window-to-display mapping
-- clipboard access
-- app launch
-
-## Validation Matrix
-
-Real tests completed on this Mac:
-
-- `npm run check`
-- `npm run build`
-- Python helper compile check for `runtime/mac_helper.py`
-- permission probe: Accessibility + Screen Recording both granted
-- display discovery on the active display
-- real screenshot capture from the desktop
-- running / installed app enumeration
-- frontmost-app detection
-- bundled skill install into a clean `CODEX_HOME`
-- bundled project `npm install && npm run build`
-- real GUI typing round-trip through the MCP `type` tool into TextEdit with exact clipboard verification
-
-## Example Commands
-
-```bash
-npm run build
-node dist/cli.js
-```
-
-```bash
-node --input-type=module -e "import { callPythonHelper } from './dist/computer-use/pythonBridge.js'; console.log(await callPythonHelper('list_displays', {}));"
-```
+Python dependencies (`pyautogui`, `mss`, `Pillow`, `pyobjc`) are installed automatically into an isolated virtualenv on first run.
 
 ## Repository Layout
 
-```text
-src/
-  computer-use/
-    executor.ts
-    hostAdapter.ts
-    pythonBridge.ts
-  vendor/computer-use-mcp/
-runtime/
-  mac_helper.py
-  requirements.txt
-skill/
-  computer-use-macos/
-examples/
-assets/
 ```
-
-## Environment Flags
-
-Optional knobs:
-
-- `CLAUDE_COMPUTER_USE_DEBUG=1`
-- `CLAUDE_COMPUTER_USE_COORDINATE_MODE=pixels`
-- `CLAUDE_COMPUTER_USE_CLIPBOARD_PASTE=1`
-- `CLAUDE_COMPUTER_USE_MOUSE_ANIMATION=1`
-- `CLAUDE_COMPUTER_USE_HIDE_BEFORE_ACTION=0`
+macos-computer-use-skill/
+├── src/
+│   ├── cli.ts                    # Entry point
+│   ├── server.ts                 # MCP server setup
+│   ├── session.ts                # Session context factory
+│   ├── computer-use/
+│   │   ├── executor.ts           # macOS executor (bridges to Python)
+│   │   ├── pythonBridge.ts       # Venv bootstrap + Python IPC
+│   │   ├── hostAdapter.ts        # Host adapter factory
+│   │   └── ...
+│   └── vendor/computer-use-mcp/
+│       ├── mcpServer.ts          # MCP server factory
+│       ├── toolCalls.ts          # Tool dispatch logic
+│       ├── tools.ts              # MCP tool schemas
+│       └── ...
+├── runtime/
+│   ├── mac_helper.py             # Python runtime (pyautogui + pyobjc)
+│   └── requirements.txt
+├── skill/
+│   └── computer-use-macos/       # Portable skill package
+├── examples/
+│   ├── mcp-config.json
+│   └── env.sh.example
+├── assets/
+│   └── hero.svg
+├── package.json
+└── tsconfig.json
+```
 
 ## Roadmap
 
-- richer app-icon extraction without private APIs
-- stronger app filtering for nested helper bundles
-- broader automated MCP integration tests
-- optional packaged release artifacts for easier distribution
+- [ ] App icon extraction without private APIs
+- [ ] Stronger nested helper-app filtering
+- [ ] Automated MCP integration test suite
+- [ ] Pre-built release artifacts for easier distribution
+
+## Contributing
+
+Contributions are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## License
 
-MIT
+[MIT](./LICENSE)
 
-## Credits
+## Acknowledgments
 
-This project preserves and adapts reusable TypeScript computer-use logic recovered from the Claude Code workflow, then replaces the missing private runtime with a fully standalone public macOS implementation.
+This project extracts and adapts reusable TypeScript computer-use logic from the Claude Code workflow, replacing the private native runtime with a fully standalone, publicly installable macOS implementation. Built on top of the [Model Context Protocol](https://modelcontextprotocol.io).
