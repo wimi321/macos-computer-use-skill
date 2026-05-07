@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/wimi321-macos-computer-use-skill-badge.png)](https://mseep.ai/app/wimi321-macos-computer-use-skill)
+
 <p align="right">
   <a href="./README.zh-CN.md">简体中文</a> ·
   <a href="./README.ja.md">日本語</a>
